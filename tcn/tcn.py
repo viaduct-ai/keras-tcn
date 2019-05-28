@@ -271,11 +271,11 @@ def compiled_tcn(
 
         # Vincent Modified
         def accuracy(y_true, y_pred):
-            print('In the accuracy fuc now!')
-            print('True values are: ')
-            print('y_true', y_true)
-            print('Predicted values are: ')
-            print('y_pred', y_pred)
+            # print('In the accuracy fuc now!')
+            # print('True values are: ')
+            # print('y_true', y_true)
+            # print('Predicted values are: ')
+            # print('y_pred', y_pred)
 
             #predict_map = gen_predict_map(num_submodels, num_subpred, num_classes)
             #true_map = gen_true_map(y_true, predict_map)
