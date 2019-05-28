@@ -227,7 +227,7 @@ def compiled_tcn(
         temp_classify = []
         for i in range(num_submodels):
             temp_dense = Dense(num_subpred+1)(x)
-            temp_softmax = Activation('softmax')(temp_1)
+            temp_softmax = Activation('softmax')(temp_dense)
             temp_classify.append(temp_softmax)
 
         output_layer = temp_classify
