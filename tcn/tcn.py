@@ -217,6 +217,8 @@ def compiled_tcn(
 
         # x = Dense(num_classes)(x)
         x = Dense(num_submodels*(num_subpred+1))(x)
+        print('Dense layer is type: ' + str(type(x)))
+
         # Vincent Stopped breaking dense layer here
         #x = Activation('softmax')(x)
         #output_layer = x
@@ -226,7 +228,7 @@ def compiled_tcn(
         for i in range(num_submodels):
             temp2 = Activation('softmax')(x)
             temp.append(temp2)
-            
+
         output_layer = temp
 
         model = Model(input_layer, output_layer)
@@ -306,6 +308,6 @@ def compiled_tcn(
         output_layer = x
         model = Model(input_layer, output_layer)
         model.compile(get_opt(), loss='mean_squared_error')
-    print(f'model.x = {input_layer.shape}')
-    print(f'model.y = {output_layer.shape}')
+    # print(f'model.x = {input_layer.shape}')
+    # print(f'model.y = {output_layer.shape}')
     return model
