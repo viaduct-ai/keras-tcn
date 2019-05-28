@@ -208,8 +208,8 @@ def compiled_tcn(
 
     if not regression:
         # classification
-            # Vincent modified with submask to predict ~1000 ways
-            # vars to define -- num_submodels, num_subpred,
+        # Vincent modified with submask to predict ~1000 ways
+        # vars to define -- num_submodels, num_subpred,
         # x = Dense(num_classes)(x)
         x = Dense(num_submodels*(num_subpred+1))(x)
         # Vincent Stopped breaking dense layer here
