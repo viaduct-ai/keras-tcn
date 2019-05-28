@@ -224,12 +224,13 @@ def compiled_tcn(
         #output_layer = x
         #model = Model(input_layer, output_layer)
 
-        temp = []
+        temp_classify = []
         for i in range(num_submodels):
-            temp2 = Activation('softmax')(x)
-            temp.append(temp2)
+            temp_dense = Dense(num_subpred+1)(x)
+            temp_softmax = Activation('softmax')(temp_1)
+            temp_classify.append(temp_softmax)
 
-        output_layer = temp
+        output_layer = temp_classify
 
         model = Model(input_layer, output_layer)
 
