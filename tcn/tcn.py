@@ -231,38 +231,37 @@ def compiled_tcn(
         	driver_list = range(1, num_classes+1) # leave 0 to rep NOTA drivers
         	predict_map = np.zeros(((num_subpred+1)*num_submodels,), dtype=int)
 
-	        for i in range(num_submodels):
-   				sampled_drivers = np.random.choice(driver_list, num_subpred, replace=False)
+            for i in range(num_submodels):
+                sampled_drivers = np.random.choice(driver_list, num_subpred, replace=False)
         		# pick x number of random drivers w/o replacement
-			    sampled_drivers = np.append(sampled_drivers, 0)
+                sampled_drivers = np.append(sampled_drivers, 0)
         		# append zero to represent the NOTA
-    			predict_map[(num_subpred+1)*i:
-                	(num_subpred+1)*i+(num_subpred+1)] = sampled_drivers
+                predict_map[(num_subpred+1)*i:(num_subpred+1)*i+(num_subpred+1)] = sampled_drivers
 
             return predict_map
 
         def gen_true_map(y_true, predict_map):
         	# taking the prediction map from earlier, generates a list of all the true
         	# values for each driver ID
-        	true_map = np.zeros(((num_subpred)*num_submodels,), dtype=int)
+            true_map = np.zeros(((num_subpred)*num_submodels,), dtype=int)
 
-	        for i in range(num_submodels):
-	        	for driver in true_map[(num_subpred+1)*i:(num_subpred+1)*i+(num_subpred+1)]:
-	        		if y_true == true_map[driver]:
-	        			true_map[(num_subpred+1)*i+driver] == 1
-        			else:
-        				true_map[(num_subpred+1)*(i+1)-1] == 1
+            for i in range(num_submodels):
+                for driver in true_map[(num_subpred+1)*i:(num_subpred+1)*i+(num_subpred+1)]:
+                    if y_true == true_map[driver]:
+                        true_map[(num_subpred+1)*i+driver] == 1
+                    else:
+                        true_map[(num_subpred+1)*(i+1)-1] == 1
 
-        	return true_map
+            return true_map
         # Vincent Stopped Adding
 
         # Vincent Modified
         def accuracy(y_true, y_pred, num_submodels, num_subpred, num_classes):
-        	print('In the accuracy fuc now!')
-        	print('True values are: ')
-        	print('y_true', y_true)
-        	print('Predicted values are: ')
-        	print('y_pred', y_pred)
+            print('In the accuracy fuc now!')
+            print('True values are: ')
+            print('y_true', y_true)
+            print('Predicted values are: ')
+            print('y_pred', y_pred)
 
         	#predict_map = gen_predict_map(num_submodels, num_subpred, num_classes)
         	#y_true_map = gen_true_map(y_true, predict_map)
@@ -274,6 +273,7 @@ def compiled_tcn(
             # convert dense predictions to labels
             y_pred_labels = K.argmax(y_pred, axis=-1)
             y_pred_labels = K.cast(y_pred_labels, K.floatx())
+
             return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
         # Vincent changed loss functions
@@ -282,6 +282,7 @@ def compiled_tcn(
             get_opt(), 
             loss='binary_crossentropy', 
             metrics=[accuracy])
+        
     else:
         # regression
         x = Dense(1)(x)
