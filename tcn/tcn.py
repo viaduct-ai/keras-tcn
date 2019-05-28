@@ -209,7 +209,12 @@ def compiled_tcn(
     if not regression:
         # classification
         # Vincent modified with submask to predict ~1000 ways
+        
         # vars to define -- num_submodels, num_subpred,
+        num_submodels = 100
+        num_subpred = 2
+
+
         # x = Dense(num_classes)(x)
         x = Dense(num_submodels*(num_subpred+1))(x)
         # Vincent Stopped breaking dense layer here
@@ -221,8 +226,7 @@ def compiled_tcn(
         # It's now in Keras@master but still not available with pip.
         # TODO remove later.
 
-        num_submodels = 100
-        num_subpred = 2
+
 
         # Vincent Adding
         def gen_predict_map(num_submodels, num_subpred, num_classes):
