@@ -219,8 +219,14 @@ def compiled_tcn(
         x = Dense(num_submodels*(num_subpred+1))(x)
         # Vincent Stopped breaking dense layer here
         x = Activation('softmax')(x)
-        output_layer = x
-        model = Model(input_layer, output_layer)
+        #output_layer = x
+        #model = Model(input_layer, output_layer)
+
+        temp = []
+        for i in range(num_submodels):
+            temp2 = Activation('softmax')(x)
+            temp = temp.append(temp2)
+        model = Model(input_layer, temp)
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
@@ -272,7 +278,7 @@ def compiled_tcn(
             print('y_pred', y_pred)
 
             #predict_map = gen_predict_map(num_submodels, num_subpred, num_classes)
-            #y_true_map = gen_true_map(y_true, predict_map)
+            #true_map = gen_true_map(y_true, predict_map)
 
             # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
             if K.ndim(y_true) == K.ndim(y_pred):
