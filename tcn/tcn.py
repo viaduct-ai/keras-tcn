@@ -225,7 +225,7 @@ def compiled_tcn(
         temp = []
         for i in range(num_submodels):
             temp2 = Activation('softmax')(x)
-            temp = temp.append(temp2)
+            temp.append(temp2)
         model = Model(input_layer, temp)
 
         # https://github.com/keras-team/keras/pull/11373
