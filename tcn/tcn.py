@@ -262,8 +262,9 @@ def compiled_tcn(
             return true_map
         # Vincent Stopped Adding
 
+
         # Vincent Modified
-        def accuracy(y_true, y_pred, num_submodels, num_subpred, num_classes):
+        def accuracy(y_true, y_pred):
             print('In the accuracy fuc now!')
             print('True values are: ')
             print('y_true', y_true)
