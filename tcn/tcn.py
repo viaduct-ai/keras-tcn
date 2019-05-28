@@ -218,7 +218,7 @@ def compiled_tcn(
         # x = Dense(num_classes)(x)
         x = Dense(num_submodels*(num_subpred+1))(x)
         # Vincent Stopped breaking dense layer here
-        x = Activation('softmax')(x)
+        #x = Activation('softmax')(x)
         #output_layer = x
         #model = Model(input_layer, output_layer)
 
@@ -226,7 +226,10 @@ def compiled_tcn(
         for i in range(num_submodels):
             temp2 = Activation('softmax')(x)
             temp.append(temp2)
-        model = Model(input_layer, temp)
+            
+        output_layer = temp
+
+        model = Model(input_layer, output_layer)
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
