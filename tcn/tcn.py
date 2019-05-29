@@ -157,8 +157,7 @@ def compiled_tcn(
         dropout_rate=0.05,  # type: float
         name='tcn',  # type: str,
         opt='adam',
-        lr=0.002)
-:
+        lr=0.002):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
