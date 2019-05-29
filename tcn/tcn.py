@@ -210,8 +210,8 @@ def compiled_tcn(
 
     if not regression:
         # classification
+
         # Vincent modified with submask to predict ~1000 sub predictions
-        
         # x = Dense(num_classes)(x)
         x = Dense(num_submodels*(num_subpred+1))(x)
 
@@ -237,9 +237,6 @@ def compiled_tcn(
 
         # Vincent Needs to modify
         def accuracy(y_true, y_pred):
-
-            #predict_map = gen_predict_map(num_submodels, num_subpred, num_classes)
-            #true_map = gen_true_map(y_true, predict_map)
 
             # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
             if K.ndim(y_true) == K.ndim(y_pred):
