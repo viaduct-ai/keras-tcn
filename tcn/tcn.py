@@ -10,6 +10,7 @@ from tensorflow.keras.layers import Activation, Lambda
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
 from tensorflow.keras.layers import Convolution1D, Dense
 from tensorflow.keras.layers import Reshape  # Vincent Added
+from tensorflow.keras.layers import add # Vincent Added
 
 
 def residual_block(x,
@@ -224,8 +225,9 @@ def compiled_tcn(
             temp_dense = Dense(num_subpred+1)(x)
             temp_softmax = Activation('softmax')(temp_dense)
             temp_classify.append(temp_softmax)
-
-        output_layer = temp_classify
+        
+        added_layer = add([temp_classify])
+        output_layer = added_layer
         # Vincent Stopped breaking dense layer here
 
         model = Model(input_layer, output_layer)
