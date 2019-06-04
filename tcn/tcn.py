@@ -226,7 +226,15 @@ def compiled_tcn(
             temp_softmax = Activation('softmax')(temp_dense)
             temp_classify.append(temp_softmax)
         
-        added_layer = add([temp_classify])
+        for i in range(temp_classify):
+            print('=============================================')
+            print('submodel num: ' + str(i))
+            print(temp_classify[i])
+        print(temp_classify)
+
+        added_layer = add(temp_classify)
+        print(added_layer)
+
         output_layer = added_layer
         # Vincent Stopped breaking dense layer here
 
