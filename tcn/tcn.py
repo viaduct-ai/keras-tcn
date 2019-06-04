@@ -226,10 +226,10 @@ def compiled_tcn(
             temp_softmax = Activation('softmax')(temp_dense)
             temp_classify.append(temp_softmax)
         
-        for i in range(temp_classify):
-            print('=============================================')
-            print('submodel num: ' + str(i))
-            print(temp_classify[i])
+        # for i in range(temp_classify):
+        #     print('=============================================')
+        #     print('submodel num: ' + str(i))
+        #     print(temp_classify[i])
         print(temp_classify)
 
         added_layer = add(temp_classify)
