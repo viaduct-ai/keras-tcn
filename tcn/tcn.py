@@ -231,7 +231,6 @@ def compiled_tcn(
         #     print('submodel num: ' + str(i))
         #     print(temp_classify[i])
         print(temp_classify)
-
         added_layer = add(temp_classify)
         print(added_layer)
 
