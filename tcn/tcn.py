@@ -221,7 +221,9 @@ def compiled_tcn(
         #model = Model(input_layer, output_layer)
 
         submodel_list = []
+        print('num_submodels:', num_submodels)
         for i in range(num_submodels):
+            print(i)
             temp_dense = Dense(num_subpred+1)(x)
             temp_softmax = Activation('softmax')(temp_dense)
             submodel_list.append(temp_softmax)
@@ -235,7 +237,7 @@ def compiled_tcn(
         #     print(temp_classify[i])
         
         #print(submodel_list)
-        concatenated_output_layer = Concatenate(submodel_list)
+        concatenated_output_layer = Concatenate()(submodel_list)
         #print(concatenated_output_layer)
 
         # Vincent Stopped breaking dense layer here
@@ -264,7 +266,8 @@ def compiled_tcn(
         model.compile(
             get_opt(),
             loss='binary_crossentropy',
-            metrics=[accuracy])
+            #metrics=[accuracy])
+            metrics=[])
 
     else:
         # regression
