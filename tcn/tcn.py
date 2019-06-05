@@ -231,14 +231,13 @@ def compiled_tcn(
         #     print('submodel num: ' + str(i))
         #     print(temp_classify[i])
         
-        print(submodel_list)
-        #concatenated_output_layer = Concatenate(temp_classify)
-
+        #print(submodel_list)
+        concatenated_output_layer = Concatenate(submodel_list, axis=1)
         #print(concatenated_output_layer)
 
         # Vincent Stopped breaking dense layer here
 
-        model = Model(input_layer, submodel_list)
+        model = Model(input_layer, concatenated_output_layer)
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
