@@ -220,25 +220,25 @@ def compiled_tcn(
         #output_layer = x
         #model = Model(input_layer, output_layer)
 
-        temp_classify = []
+        submodel_list = []
         for i in range(num_submodels):
             temp_dense = Dense(num_subpred+1)(x)
             temp_softmax = Activation('softmax')(temp_dense)
-            temp_classify.append(temp_softmax)
+            submodel_list.append(temp_softmax)
         
         # for i in range(temp_classify):
         #     print('=============================================')
         #     print('submodel num: ' + str(i))
         #     print(temp_classify[i])
-        print(temp_classify)
-        concatenated_output_layer = Concatenate(Lambda(temp_classify))
-        #concatenated_output_layer = Lambda(Concatinate(temp_classify))
+        
+        print(submodel_list)
+        #concatenated_output_layer = Concatenate(temp_classify)
 
-        print(concatenated_output_layer)
+        #print(concatenated_output_layer)
 
         # Vincent Stopped breaking dense layer here
 
-        model = Model(input_layer, concatenated_output_layer)
+        model = Model(input_layer, submodel_list)
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
