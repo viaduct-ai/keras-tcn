@@ -235,7 +235,7 @@ def compiled_tcn(
         #     print(temp_classify[i])
         
         #print(submodel_list)
-        concatenated_output_layer = Concatenate(submodel_list, axis=1)
+        concatenated_output_layer = Concatenate(submodel_list)
         #print(concatenated_output_layer)
 
         # Vincent Stopped breaking dense layer here
