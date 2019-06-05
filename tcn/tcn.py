@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Activation, Lambda
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
 from tensorflow.keras.layers import Convolution1D, Dense
 from tensorflow.keras.layers import Reshape  # Vincent Added
-from tensorflow.keras.layers import add # Vincent Added
+from tensorflow.keras.layers import Concatenate # Vincent Added
 
 
 def residual_block(x,
@@ -231,10 +231,10 @@ def compiled_tcn(
         #     print('submodel num: ' + str(i))
         #     print(temp_classify[i])
         print(temp_classify)
-        added_layer = add(temp_classify)
-        print(added_layer)
+        concatenated_layer = Concatenate(temp_classify)
+        print(concatenated_layer)
 
-        output_layer = added_layer
+        output_layer = concatenated_layer
         # Vincent Stopped breaking dense layer here
 
         model = Model(input_layer, output_layer)
