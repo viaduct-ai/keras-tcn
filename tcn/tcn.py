@@ -231,17 +231,10 @@ def compiled_tcn(
             print(temp_dense)
             print(temp_softmax)
         
-        # for i in range(temp_classify):
-        #     print('=============================================')
-        #     print('submodel num: ' + str(i))
-        #     print(temp_classify[i])
-        
-        #print(submodel_list)
         concatenated_output_layer = Concatenate()(submodel_list)
-        #print(concatenated_output_layer)
+        # note: could have done `concatenate(submodel_list)`
 
         # Vincent Stopped breaking dense layer here
-
         model = Model(input_layer, concatenated_output_layer)
 
         # https://github.com/keras-team/keras/pull/11373
