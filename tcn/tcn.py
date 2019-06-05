@@ -225,6 +225,9 @@ def compiled_tcn(
             temp_dense = Dense(num_subpred+1)(x)
             temp_softmax = Activation('softmax')(temp_dense)
             submodel_list.append(temp_softmax)
+            print('===========================')
+            print(temp_dense)
+            print(temp_softmax)
         
         # for i in range(temp_classify):
         #     print('=============================================')
