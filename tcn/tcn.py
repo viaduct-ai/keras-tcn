@@ -221,15 +221,10 @@ def compiled_tcn(
         #model = Model(input_layer, output_layer)
 
         submodel_list = []
-        print('num_submodels:', num_submodels)
         for i in range(num_submodels):
-            print(i)
             temp_dense = Dense(num_subpred+1)(x)
             temp_softmax = Activation('softmax')(temp_dense)
             submodel_list.append(temp_softmax)
-            print('===========================')
-            print(temp_dense)
-            print(temp_softmax)
         
         concatenated_output_layer = Concatenate()(submodel_list)
         # note: could have done `concatenate(submodel_list)`
