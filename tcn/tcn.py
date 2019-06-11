@@ -151,6 +151,7 @@ def compiled_tcn(
         max_len,  # type: int
         num_submodels, # type: int -- vincent added
         num_subpred, # type: int -- Vincent Added
+        metrics, #type: list -- John added
         padding='causal',  # type: str
         use_skip_connections=True,  # type: bool
         return_sequences=True,
@@ -254,8 +255,7 @@ def compiled_tcn(
         model.compile(
             get_opt(),
             loss='binary_crossentropy',
-            #metrics=[accuracy])
-            metrics=[])
+            metrics=metrics)
 
     else:
         # regression
