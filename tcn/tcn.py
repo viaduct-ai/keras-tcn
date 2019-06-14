@@ -224,8 +224,8 @@ def compiled_tcn(
                 y_true = K.squeeze(y_true, -1)
             # convert dense predictions to labels
             y_pred_labels = K.argmax(y_pred, axis=-1)
-            #y_pred_labels = K.cast(y_pred_labels, K.floatx())
-            return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
+            y_pred_labels = K.cast(y_pred_labels, K.floatx())
+            return K.cast(K.equal(K.cast(y_true, K.floatx()), y_pred_labels), K.floatx())
 
         model.compile(
             get_opt(),
