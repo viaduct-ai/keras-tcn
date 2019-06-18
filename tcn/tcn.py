@@ -156,6 +156,7 @@ def compiled_tcn(
         name='tcn',  # type: str,
         opt='adam',
         lr=0.002,
+        metrics=[],
         options=None,
         run_metadata=None):
     # type: (...) -> keras.Model
@@ -230,7 +231,7 @@ def compiled_tcn(
         model.compile(
             get_opt(),
             loss='sparse_categorical_crossentropy',
-            metrics=[accuracy],
+            metrics=[accuracy] + metrics,
             options=options,
             run_metadata=run_metadata)
     else:
