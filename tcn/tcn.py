@@ -156,9 +156,7 @@ def compiled_tcn(
         name='tcn',  # type: str,
         opt='adam',
         lr=0.002,
-        metrics=[],
-        options=None,
-        run_metadata=None):
+        metrics=[]):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
@@ -231,9 +229,7 @@ def compiled_tcn(
         model.compile(
             get_opt(),
             loss='sparse_categorical_crossentropy',
-            metrics=[accuracy] + metrics,
-            options=options,
-            run_metadata=run_metadata)
+            metrics=[accuracy] + metrics)
     else:
         # regression
         x = Dense(1)(x)
@@ -242,9 +238,7 @@ def compiled_tcn(
         model = Model(input_layer, output_layer)
         model.compile(
             get_opt(),
-            loss='mean_squared_error',
-            options=options,
-            run_metadata=run_metadata)
+            loss='mean_squared_error')
 
     print(f'model.x = {input_layer.shape}')
     print(f'model.y = {output_layer.shape}')
