@@ -17,9 +17,10 @@ def residual_block(x,
                    nb_filters,
                    kernel_size,
                    padding,
+                   activation='relu',
                    dropout_rate=0):
     # type: (Layer, int, int, int, str, float) -> Tuple[Layer, Layer]
-    """Defines the residual block for the WaveNet TCN
+    """Defines the residual block for the WaveNet TCN.
 
     Args:
         x: The previous layer in the model
@@ -35,11 +36,10 @@ def residual_block(x,
     """
     prev_x = x
     for k in range(2):
-        x = Conv1D(
-            filters=nb_filters,
-            kernel_size=kernel_size,
-            dilation_rate=dilation_rate,
-            padding=padding)(x)
+        x = Conv1D(filters=nb_filters,
+                   kernel_size=kernel_size,
+                   dilation_rate=dilation_rate,
+                   padding=padding)(x)
         # x = BatchNormalization()(x)  # TODO should be WeightNorm here.
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
@@ -47,6 +47,7 @@ def residual_block(x,
     # 1x1 conv to match the shapes (channel dimension).
     prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
     res_x = tensorflow.keras.layers.add([prev_x, x])
+    res_x = Activation(activation)(res_x)
     return res_x, x
 
 
@@ -66,23 +67,23 @@ def process_dilations(dilations):
 class TCN:
     """Creates a TCN layer.
 
-        Input shape:
-            A tensor of shape (batch_size, timesteps, input_dim).
+    Input shape:
+        A tensor of shape (batch_size, timesteps, input_dim).
 
-        Args:
-            nb_filters: The number of filters to use in the convolutional layers.
-            kernel_size: The size of the kernel to use in each convolutional layer.
-            dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
-            nb_stacks : The number of stacks of residual blocks to use.
-            padding: The padding to use in the convolutional layers, 'causal' or 'same'.
-            use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
-            return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
-            dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
-            name: Name of the model. Useful when having multiple TCN.
+    Args:
+        nb_filters: The number of filters to use in the convolutional layers.
+        kernel_size: The size of the kernel to use in each convolutional layer.
+        dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
+        nb_stacks : The number of stacks of residual blocks to use.
+        padding: The padding to use in the convolutional layers, 'causal' or 'same'.
+        use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
+        return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
+        dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+        name: Name of the model. Useful when having multiple TCN.
 
-        Returns:
-            A TCN layer.
-        """
+    Returns:
+        A TCN layer.
+    """
 
     def __init__(self,
                  nb_filters=64,
@@ -93,6 +94,7 @@ class TCN:
                  use_skip_connections=True,
                  dropout_rate=0.0,
                  return_sequences=False,
+                 activation='linear',
                  name='tcn'):
         self.name = name
         self.return_sequences = return_sequences
@@ -103,6 +105,7 @@ class TCN:
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
         self.padding = padding
+        self.activation = activation
 
         if padding != 'causal' and padding != 'same':
             raise ValueError(
@@ -131,7 +134,9 @@ class TCN:
                     nb_filters=self.nb_filters,
                     kernel_size=self.kernel_size,
                     padding=self.padding,
-                    dropout_rate=self.dropout_rate)
+                    dropout_rate=self.dropout_rate,
+                    activation=self.activation,
+                )
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = tensorflow.keras.layers.add(skip_connections)
@@ -154,12 +159,14 @@ def compiled_tcn(
         regression=False,  # type: bool
         dropout_rate=0.05,  # type: float
         name='tcn',  # type: str,
+        activation='linear',  # type:str,
         opt='adam',
         lr=0.002,
         metrics=[]):
     # type: (...) -> keras.Model
-    """Creates a compiled TCN model for a given task (i.e. regression or classification).
-    Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
+    """Creates a compiled TCN model for a given task (i.e. regression or
+    classification). Classification uses a sparse categorical loss. Please
+    input class ids and not one-hot encodings.
 
     Args:
         num_feat: The number of features of your input, i.e. the last dimension of: (batch_size, timesteps, input_dim).
@@ -175,6 +182,7 @@ def compiled_tcn(
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
         name: Name of the model. Useful when having multiple TCN.
+        activation: The activation used in the residual blocks o = Activation(x + F(x)).
         opt: Optimizer name.
         lr: Learning rate.
     Returns:
@@ -194,7 +202,7 @@ def compiled_tcn(
     # --- Vincent Stopped breaking stuff here ---
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
-            use_skip_connections, dropout_rate, return_sequences,
+            use_skip_connections, dropout_rate, return_sequences, activation,
             name)(reshape_layer)
 
     print('x.shape=', x.shape)
@@ -224,21 +232,19 @@ def compiled_tcn(
             # convert dense predictions to labels
             y_pred_labels = K.argmax(y_pred, axis=-1)
             y_pred_labels = K.cast(y_pred_labels, K.floatx())
-            return K.cast(K.equal(K.cast(y_true, K.floatx()), y_pred_labels), K.floatx())
+            return K.cast(K.equal(K.cast(y_true, K.floatx()), y_pred_labels),
+                          K.floatx())
 
-        model.compile(
-            get_opt(),
-            loss='sparse_categorical_crossentropy',
-            metrics=[accuracy] + metrics)
+        model.compile(get_opt(),
+                      loss='sparse_categorical_crossentropy',
+                      metrics=[accuracy] + metrics)
     else:
         # regression
         x = Dense(1)(x)
         x = Activation('linear')(x)
         output_layer = x
         model = Model(input_layer, output_layer)
-        model.compile(
-            get_opt(),
-            loss='mean_squared_error')
+        model.compile(get_opt(), loss='mean_squared_error')
 
     print(f'model.x = {input_layer.shape}')
     print(f'model.y = {output_layer.shape}')
