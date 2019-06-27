@@ -213,6 +213,7 @@ def compiled_tcn(
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences, activation,
+            l1, l2,
             name)(reshape_layer)
 
     print('x.shape=', x.shape)
