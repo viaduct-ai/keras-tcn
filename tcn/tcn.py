@@ -130,7 +130,7 @@ class TCN:
         x = inputs
         # 1D FCN.
         x = Convolution1D(self.nb_filters, 1, padding=self.padding,
-         kernel_regularizer=regularizers.l2(l=l2_val))(x)
+         kernel_regularizer=regularizers.l2(l=self.l2_val))(x) # problem child
         skip_connections = []
         for s in range(self.nb_stacks):
             for d in self.dilations:
