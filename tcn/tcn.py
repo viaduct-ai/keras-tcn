@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Activation, Lambda
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
 from tensorflow.keras.layers import Convolution1D, Dense
 from tensorflow.keras.layers import Reshape  # Vincent Added
-from tensorflow.keras.regularizers import l2 # Vincent Added
+from tensorflow.keras import regularizers # Vincent Added
 
 
 def residual_block(x,
@@ -42,13 +42,13 @@ def residual_block(x,
                    kernel_size=kernel_size,
                    dilation_rate=dilation_rate,
                    padding=padding,
-                   kernel_regularizer=l2(l2))(x)
+                   kernel_regularizer=regularizers.l2(l=l2))(x)
         # x = BatchNormalization()(x)  # TODO should be WeightNorm here.
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
 
     # 1x1 conv to match the shapes (channel dimension).
-    prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
+    prev_x = Conv1D(nb_filters, 1, padding='same', kernel_regularizer=regularizers.l2(l=l2))(prev_x)
     res_x = tensorflow.keras.layers.add([prev_x, x])
     res_x = Activation(activation)(res_x)
     return res_x, x
@@ -130,7 +130,7 @@ class TCN:
         x = inputs
         # 1D FCN.
         x = Convolution1D(self.nb_filters, 1, padding=self.padding,
-         kernel_regularizer=l2(l2))(x)
+         kernel_regularizer=regularizers.l2(l=l2))(x)
         skip_connections = []
         for s in range(self.nb_stacks):
             for d in self.dilations:
