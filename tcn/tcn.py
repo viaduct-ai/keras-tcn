@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Activation, Lambda
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
 from tensorflow.keras.layers import Convolution1D, Dense
 from tensorflow.keras.layers import Reshape  # Vincent Added
-from tensorflow.keras.regularizers import l1_l2
+from tensorflow.keras.regularizers import l2 # Vincent Added
 
 
 def residual_block(x,
@@ -19,7 +19,6 @@ def residual_block(x,
                    kernel_size,
                    padding,
                    activation='relu',
-                   l1=0.0,
                    l2=0.0,
                    dropout_rate=0):
     # type: (Layer, int, int, int, str, float) -> Tuple[Layer, Layer]
@@ -43,7 +42,7 @@ def residual_block(x,
                    kernel_size=kernel_size,
                    dilation_rate=dilation_rate,
                    padding=padding,
-                   kernel_regularizer=l1_l2(l1=l1, l2=l2))(x)
+                   kernel_regularizer=l2(l2))(x)
         # x = BatchNormalization()(x)  # TODO should be WeightNorm here.
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
@@ -99,7 +98,6 @@ class TCN:
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='linear',
-                 l1=0.0,
                  l2=0.0,
                  name='tcn'):
         self.name = name
@@ -112,7 +110,6 @@ class TCN:
         self.nb_filters = nb_filters
         self.padding = padding
         self.activation = activation
-        self.l1 = l1
         self.l2 = l2
 
         if padding != 'causal' and padding != 'same':
@@ -132,7 +129,8 @@ class TCN:
     def __call__(self, inputs):
         x = inputs
         # 1D FCN.
-        x = Convolution1D(self.nb_filters, 1, padding=self.padding, kernel_regularizer=l1_l2(l1=l1, l2=l2))(x)
+        x = Convolution1D(self.nb_filters, 1, padding=self.padding,
+         kernel_regularizer=l2(l2))(x)
         skip_connections = []
         for s in range(self.nb_stacks):
             for d in self.dilations:
@@ -144,6 +142,7 @@ class TCN:
                     padding=self.padding,
                     dropout_rate=self.dropout_rate,
                     activation=self.activation,
+                    l2=self.l2                   
                 )
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
@@ -170,7 +169,6 @@ def compiled_tcn(
         activation='linear',  # type:str,
         opt='adam',
         lr=0.002,
-        l1=0.0,
         l2=0.0,
         metrics=[]):
     # type: (...) -> keras.Model
@@ -213,8 +211,7 @@ def compiled_tcn(
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences, activation,
-            l1, l2,
-            name)(reshape_layer)
+            l2, name)(reshape_layer)
 
     print('x.shape=', x.shape)
 
