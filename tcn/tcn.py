@@ -225,7 +225,7 @@ def compiled_tcn(
 
     if not regression:
         # classification
-        x = Dense(num_classes)(x)
+        x = Dense(num_classes, kernel_regularizer=regularizers.l2(l=l2))(x)
         x = Activation('softmax')(x)
         output_layer = x
         model = Model(input_layer, output_layer)
